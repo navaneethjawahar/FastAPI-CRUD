@@ -21,6 +21,11 @@ def validation_exception_handler(request, err):
     base_error_message = f"Failed to execute: {request.method}: {request.url}"
     return JSONResponse(status_code=400, content={"message": f"{base_error_message}. Detail: {err}"})
 
+
+@app.get('/')
+def welcome():
+    return "Welcome to the CRUD-Fast-API home page written by Navaneeth and Isaac. Please navigate to /docs for swagger documentation. Please navigate to https://github.com/navaneethjawahar/FastAPI-CRUD for the code"
+
 @app.post('/student', response_model=schemas.Item,status_code=201)
 async def create_student(item_request: schemas.StudentCreate, db: Session = Depends(get_db)):
     """
@@ -36,7 +41,7 @@ async def create_student(item_request: schemas.StudentCreate, db: Session = Depe
 @app.get('/student',response_model=List[schemas.Item])
 def get_students(db: Session = Depends(get_db)):
     """
-    Get all the Items stored in database
+    Get all the students stored in the database
     """
     # if name:
     #     items =[]
@@ -50,7 +55,7 @@ def get_students(db: Session = Depends(get_db)):
 @app.get('/student/{id}', response_model=schemas.Item)
 def get_item(id: int,db: Session = Depends(get_db)):
     """
-    Get the Item with the given ID provided by User stored in database
+    Get the student record with the given ID provided by User stored in database
     """
     db_item = student.fetch_by_id(db,id)
     if db_item is None:
@@ -60,7 +65,7 @@ def get_item(id: int,db: Session = Depends(get_db)):
 @app.delete('/student/{id}', tags=["Item"])
 async def delete_item(id: int,db: Session = Depends(get_db)):
     """
-    Delete the Item with the given ID provided by User stored in database
+    Delete the Item record with the given ID provided by User stored in database
     """
     db_item = student.fetch_by_id(db,id)
     if db_item is None:
@@ -69,11 +74,11 @@ async def delete_item(id: int,db: Session = Depends(get_db)):
     return "Item deleted successfully!"
 
 @app.put('/student/{id}', tags=["Item"],response_model=schemas.Item)
-async def update_item(item_id: int,item_request: schemas.Item, db: Session = Depends(get_db)):
+async def update_item(id: int,item_request: schemas.Item, db: Session = Depends(get_db)):
     """
-    Update an Item stored in the database
+    Update the student record stored in the database
     """
-    db_item = student.fetch_by_id(db, id)
+    db_item = student.fetch_by_id(db, int(id))
     if db_item:
         update_item_encoded = jsonable_encoder(item_request)
         db_item.First_Name = update_item_encoded['First_Name']
@@ -87,4 +92,4 @@ async def update_item(item_id: int,item_request: schemas.Item, db: Session = Dep
   
 
 if __name__ == "__main__":
-    uvicorn.run("index:app", port=9000, reload=True)     
+    uvicorn.run("index:app", port=9000, reload=True,debug=True)     
