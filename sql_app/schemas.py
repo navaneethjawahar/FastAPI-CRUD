@@ -22,4 +22,12 @@ class StudentCreate(BaseModel):
 
 
 class Item(StudentBase):
-    id: int
+    id: Optional[int] = None
+
+class Studentupdate(BaseModel):
+    class Config:
+        orm_mode = True
+    First_Name: str
+    Last_Name: str
+    Amount_Due : float
+    DOB: Optional[str] = None
